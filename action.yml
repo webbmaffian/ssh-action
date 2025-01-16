@@ -1,0 +1,34 @@
+name: Setup SSH
+description: Setup SSH config
+
+inputs:
+  SSH_PRIVATE_KEY:
+    description: "An SSH private key"
+    required: true
+  REMOTE_HOST:
+    description: "The remote host domain"
+    required: true
+  REMOTE_USER:
+    description: "The remote user"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Configure SSH
+      run: |
+        mkdir -p ~/.ssh/
+        echo "$SSH_KEY" > ~/.ssh/private.key
+        chmod 600 ~/.ssh/private.key
+        cat >>~/.ssh/config <<END
+        Host remote
+        HostName $SSH_HOST
+        User $SSH_USER
+        IdentityFile ~/.ssh/private.key
+        StrictHostKeyChecking no
+        END
+      shell: bash
+      env:
+        SSH_KEY: ${{ inputs.SSH_PRIVATE_KEY }}
+        SSH_HOST: ${{ inputs.REMOTE_HOST }}
+        SSH_USER: ${{ inputs.REMOTE_USER }}
